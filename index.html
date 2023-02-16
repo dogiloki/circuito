@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title></title>
+	<style type="text/css">
+		.canvas{
+			border: 2px solid #c2c2c2;
+			margin-top: 10px;
+		}
+	</style>
+</head>
+<body>
+
+<header>
+	Botón:
+	<input type="text" id="box-btn"><button id="btn-add-btn">Agregar</button>
+	Puerta lógica:
+	<select id="box-logic-gate"></select>
+	<button id="btn-add-logic-gate">Agregar</button>
+	<div class="content-tools" id="content-tools"></div>
+	<button class="btn-table" id="btn-table">Generar tabla</button>
+</header>
+
+<canvas class="canvas" id="canvas" width="700px" height="500px"></canvas>
+<table class="content-table" id="content-table" border="1"></table>
+
+</body>
+</html>
+
+<script src="scripts/File.js"></script>
+<script src="scripts/Scenery.js"></script>
+<script src="scripts/Table.js"></script>
+<script src="scripts/Node.js"></script>
+<script src="scripts/app.js"></script>
