@@ -50,12 +50,12 @@ class Node{
 		this.width=50;
 		this.height=50;
 		this.icon=null;
-		this.changeStatus(false);
+		this.logic();
 	}
 
 	setLogicGate(logic_gate){
 		this.logic_gate=logic_gate;
-		this.changeStatus(this.output);
+		this.logic();
 	}
 
 	isBtn(){
@@ -64,10 +64,12 @@ class Node{
 
 	addInput(node){
 		this.inputs.push(node);
+		node.logic();
 	}
 
 	addOutput(node){
 		this.outputs.push(node);
+		node.getOutput().logic();
 	}
 
 	getOutput(node=this){
@@ -75,7 +77,7 @@ class Node{
 	}
 
 	changeStatus(status=null){
-		this.status=(status==null)?(this.status?false:true):status;
+		this.status=(status==null)?(this.logic()?false:true):status;
 		if(this.isBtn()){
 			this.icon=this.status?Node.btn_icon.on:Node.btn_icon.off;
 		}else{
@@ -84,7 +86,8 @@ class Node{
 	}
 
 	logic(){
-		if(this.logic_gate==null || this.inputs.length<=0){
+		if(this.logic_gate==null){
+			this.changeStatus(this.status);
 			return this.status;
 		}
 		let status=this.status;
@@ -106,7 +109,7 @@ class Node{
 						count++;
 					}
 				});
-				status=count!=this.inputs.length;
+				status=count==0?true:count!=this.inputs.length;
 				break;
 			case Node.logic_gate.or:
 				count=0;
@@ -139,7 +142,7 @@ class Node{
 				this.inputs.forEach((node)=>{
 					status=node.logic();
 				});
-				status=status?false:true;
+				status=this.inputs<=0?true:status?false:true;
 				break;
 			case Node.logic_gate.led:
 				this.inputs.forEach((node)=>{

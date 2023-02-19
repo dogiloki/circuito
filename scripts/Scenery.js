@@ -38,7 +38,7 @@ class Scenery{
 						case Scenery.tools.connect: this.addConnect(node,this.selection.node); return;
 					}
 				}
-				if(!this.pressing_key && this.selection.tool!=Scenery.tools.connect){
+				if(!this.pressing_key && this.selection.tool!=Scenery.tools.connect && this.selection.tool!=Scenery.tools.move){
 					this.selection.tool=node.isBtn()?Scenery.tools.btn:Scenery.tools.move;
 				}
 				switch(this.selection.tool){
@@ -46,11 +46,11 @@ class Scenery{
 						if(node.isBtn()){
 							node.changeStatus();
 							node.getOutput().logic();
+							this.render(true);
 						}
 						break;
 				}
 				this.selection.node=node;
-				this.render(true);
 			}
 		});
 		this.canvas.addEventListener('mouseup',()=>{
@@ -58,7 +58,7 @@ class Scenery{
 			this.render();
 		});
 		this.canvas.addEventListener('mousemove',(event)=>{
-			if((!this.pressing && !this.pressing_key) || this.selection.node==null){
+			if((!this.pressing && !this.pressing_key && this.selection.tool!=Scenery.tools.connect) || this.selection.node==null){
 				return;
 			}
 			let node=this.selection.node;
@@ -95,7 +95,6 @@ class Scenery{
 				case 'Control': this.changeTool(Scenery.tools.btn); break;
 			}
 		});
-		this.changeTool(Scenery.tools.move);
 	}
 
 	changeTool(tool){
@@ -122,13 +121,14 @@ class Scenery{
 			node.outputs=node.outputs.filter((node_output)=>{
 				return node_delete.id!=node_output.id;
 			});
+			node.logic();
 			return node_delete.id!=node.id;
 		});
 		this.nodes_btn=this.nodes_btn.filter((node)=>{
 			return node_delete.id!=node.id;
 		});
 		this.selection.node=null;
-		this.render();
+		this.render(true);
 	}
 
 	addConnect(node1,node2){
@@ -142,14 +142,18 @@ class Scenery{
 		node1.addInput(node2);
 		node2.addOutput(node1);
 		this.selection.node=null;
-		this.render();
+		this.render(true);
 	}
 
 	render(change_img=false){
 		this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
 		this.nodes.forEach((node)=>{
-			this.ctx.fillStyle=node.status?'green':'red';
+			if(this.selection.node!=null && this.selection.node.id==node.id && !node.isBtn()){
+				this.ctx.fillStyle='blue';
+				this.ctx.fillRect(node.x-3,node.y-3,node.width+6,node.height+6);
+			}
 			if(node.icon==null || node.logic_gate==Node.logic_gate.led){
+				this.ctx.fillStyle=node.status?'green':'red';
 				this.ctx.fillRect(node.x,node.y,node.width,node.height);
 			}else{
 				if((node.img??null)==null || change_img){
@@ -163,7 +167,6 @@ class Scenery{
 					};
 				}else{
 					this.ctx.drawImage(node.img,node.x,node.y,node.width,node.height);
-					
 				}
 				if(node.isBtn()){
 					let x=node.x-5;
