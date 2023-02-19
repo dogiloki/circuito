@@ -37,6 +37,7 @@ class Node{
 	};
 
 	constructor(value=null){
+		this.id=Symbol();
 		this.value=value;
 		this.status=false;
 		this.logic_gate=null;

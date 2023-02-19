@@ -54,17 +54,42 @@ function loadScenary(){
 		return;
 	}
 	scenery=new Scenery(document.getElementById('canvas'));
-	scenery_file.nodes.forEach((node_file)=>{
-		let node=new Node(node_file.value);
-		node.x=node_file.x;
-		node.y=node_file.y;
-		node.setLogicGate(node_file.logic_gate);
-		node.inputs=node_file.inputs;
-		node.outputs=node_file.outputs;
-		scenery.addNode(node);
+	let nodes=[];
+	// scenery_file.connections.forEach((connection)=>{
+	// 	let node1=new Node(connection.node1.value);
+	// 	node1.x=connection.node1.x;
+	// 	node1.y=connection.node1.y;
+	// 	node1.setLogicGate(connection.node1.logic_gate);
+	// 	let node2=new Node(connection.node2.value);
+	// 	node2.x=connection.node2.x;
+	// 	node2.y=connection.node2.y;
+	// 	node2.setLogicGate(connection.node2.logic_gate);
+	// 	nodes.push(node1);
+	// 	scenery.addNode(node1);
+	// 	scenery.addNode(node2);
+	// 	scenery.addConnect(node1,node2);
+	// });
+	scenery_file.nodes.forEach((node)=>{
+		let node_new=new Node(node.value);
+		node_new.x=node.x;
+		node_new.y=node.y;
+		node_new.setLogicGate(node.logic_gate);
+		scenery.addNode(node_new);
+	});
+	scenery_file.connections.forEach((connection)=>{
+		
 	});
 	scenery.render();
 	this.scenery=scenery;
+}
+
+function saveScenary(){
+	this.scenery.nodes.forEach((node)=>{
+		node.inputs=[];
+		node.outputs=[];
+	});
+	File.set(this.scenery);
+	this.loadScenary();
 }
 
 function generateTable(table){

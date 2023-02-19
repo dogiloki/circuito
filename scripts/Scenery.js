@@ -11,6 +11,7 @@ class Scenery{
 		this.ctx=canvas.getContext("2d");
 		this.nodes=[];
 		this.nodes_btn=[];
+		this.connections=[];
 		this.pressing=false;
 		this.pressing_key=false;
 		this.selection={
@@ -49,20 +50,32 @@ class Scenery{
 						break;
 				}
 				this.selection.node=node;
+				this.render(true);
 			}
-			this.render();
 		});
 		this.canvas.addEventListener('mouseup',()=>{
 			this.pressing=false;
+			this.render();
 		});
 		this.canvas.addEventListener('mousemove',(event)=>{
-			if(!this.pressing || this.selection.node==null || this.selection.tool!=Scenery.tools.move){
+			if((!this.pressing && !this.pressing_key) || this.selection.node==null){
 				return;
 			}
 			let node=this.selection.node;
-			node.x=(event.clientX-this.canvas.offsetLeft);
-			node.y=(event.clientY-this.canvas.offsetTop);
-			this.render();
+			let x=(event.clientX-this.canvas.offsetLeft);
+			let y=(event.clientY-this.canvas.offsetTop);
+			switch(this.selection.tool){
+				case Scenery.tools.move:
+					node.x=x;
+					node.y=y;
+					this.render();
+					break;
+				case Scenery.tools.connect:
+					this.renderLine(node.x+node.width/2,node.y+node.height/2,x,y);
+					break;
+				default: break;
+			}
+
 		});
 		document.addEventListener('keydown',(event)=>{
 			if(this.pressing_key){
@@ -103,37 +116,55 @@ class Scenery{
 			return;
 		}
 		this.nodes=this.nodes.filter((node)=>{
-			return node_delete!=node;
+			node.inputs=node.inputs.filter((node_input)=>{
+				return node_delete.id!=node_input.id;
+			});
+			node.outputs=node.outputs.filter((node_output)=>{
+				return node_delete.id!=node_output.id;
+			});
+			return node_delete.id!=node.id;
 		});
 		this.nodes_btn=this.nodes_btn.filter((node)=>{
-			return node_delete!=node;
+			return node_delete.id!=node.id;
 		});
 		this.selection.node=null;
 		this.render();
 	}
 
 	addConnect(node1,node2){
-		if(node1==node2){
+		if(node1.id==node2.id){
 			return;
 		}
+		// let connection=new Connection();
+		// connection.node1=node1;
+		// connection.node2=node2;
+		// this.connections.push(connection);
 		node1.addInput(node2);
 		node2.addOutput(node1);
 		this.selection.node=null;
 		this.render();
 	}
 
-	render(){
+	render(change_img=false){
 		this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
 		this.nodes.forEach((node)=>{
 			this.ctx.fillStyle=node.status?'green':'red';
 			if(node.icon==null || node.logic_gate==Node.logic_gate.led){
 				this.ctx.fillRect(node.x,node.y,node.width,node.height);
 			}else{
-				let img=document.createElement('img');
-				img.width=node.width;
-				img.height=node.height;
-				img.src=node.icon;
-				this.ctx.drawImage(img,node.x,node.y,node.width,node.height);
+				if((node.img??null)==null || change_img){
+					let img=document.createElement('img');
+					img.width=node.width;
+					img.height=node.height;
+					img.src=node.icon;
+					img.onload=()=>{
+						node.img=img;
+						this.ctx.drawImage(node.img,node.x,node.y,node.width,node.height);
+					};
+				}else{
+					this.ctx.drawImage(node.img,node.x,node.y,node.width,node.height);
+					
+				}
 				if(node.isBtn()){
 					let x=node.x-5;
 					let y=node.y+10;
@@ -143,14 +174,26 @@ class Scenery{
 				}
 			}
 			node.inputs.forEach((node_line)=>{
-				this.ctx.moveTo(node.x,node.y+node.height/2);
+				this.ctx.lineWidth=2;
+				this.ctx.strokeStyle='black';
+				this.ctx.beginPath();
+				this.ctx.moveTo(node.x-7,node.y+node.height/2);
 				this.ctx.lineTo(node_line.x+node_line.width/2,node_line.y+node_line.height/2);
-				this.ctx.fillStyle='black';
 				this.ctx.stroke();
 				this.ctx.closePath();
 			});
 		});
+	}
 
+	renderLine(x1,y1,x2,y2){
+		this.render();
+		this.ctx.lineWidth=2;
+		this.ctx.strokeStyle='black';
+		this.ctx.beginPath();
+		this.ctx.moveTo(x1,y1);
+		this.ctx.lineTo(x2,y2);
+		this.ctx.stroke();
+		this.ctx.closePath();
 	}
 
 }
