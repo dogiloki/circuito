@@ -6,6 +6,7 @@ var content_table=document.getElementById('content-table');
 var btn_table=document.getElementById('btn-table');
 var scenery=new Scenery(document.getElementById('canvas'));
 var table;
+var pressing=false;
 
 document.addEventListener('DOMContentLoaded',()=>{
 	Object.keys(Node.logic_gate).forEach((key)=>{
@@ -45,6 +46,22 @@ btn_add_logic_gate.addEventListener('click',()=>{
 
 btn_table.addEventListener('click',()=>{
 	this.generateTable();
+});
+
+content_table.addEventListener('mousedown',()=>{
+	this.pressing=true;
+});
+
+content_table.addEventListener('mouseup',()=>{
+	this.pressing=false;
+});
+
+content_table.addEventListener('mousemove',(event)=>{
+	if(!this.pressing){
+		return;
+	}
+	//content_table.style.left=(event.clientX-10)+"px";
+	//content_table.style.top=(event.clientY-10)+"px";
 });
 
 function loadScenary(){
@@ -102,7 +119,7 @@ function saveScenary(){
 function generateTable(table){
 	this.table=new Table(this.scenery.nodes_btn,this.scenery.selection.node);
 	this.table.generateTable();
-	this.content_table.innerHTML="";
+	document.getElementById('table').innerHTML="";
 	for(let a=-1; a<this.table.values.length; a++){
 		let tr=document.createElement('tr');
 		for(let b=0; b<this.table.bits.length; b++){
@@ -113,6 +130,6 @@ function generateTable(table){
 		let td=document.createElement('td');
 		td.textContent=a==-1?"Salida":this.table.outputs[a];
 		tr.appendChild(td);
-		this.content_table.appendChild(tr);
+		document.getElementById('table').appendChild(tr);
 	}
 }

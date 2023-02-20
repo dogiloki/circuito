@@ -11,6 +11,19 @@
 		}
 		.canvas{
 		}
+		.content-table{
+			position: fixed;
+			right: 20px;
+			top: 20px;
+			border: 2px solid #c2c2c2;
+			height: 50vh;
+			background: #f5f5f5;
+			overflow-x: hidden;
+			overflow-y: scroll;
+		}
+		.table{
+			margin-top: 20px;
+		}
 	</style>
 </head>
 <body>
@@ -25,11 +38,15 @@
 </header>
 
 <canvas class="canvas" id="canvas" width="700px" height="700px"></canvas>
-<table class="content-table" id="content-table" border="1"></table>
+
+<div class="content-table" id="content-table">
+	<table class="table" id="table" border="1"></table>
+</div>
 
 </body>
 </html>
 
+<script src="scripts/Util.js"></script>
 <script src="scripts/File.js"></script>
 <script src="scripts/Connection.js"></script>
 <script src="scripts/Scenery.js"></script>
