@@ -1,6 +1,5 @@
 var btn_add_btn=document.getElementById('btn-add-btn');
 var btn_add_logic_gate=document.getElementById('btn-add-logic-gate');
-var box_btn=document.getElementById('box-btn');
 var box_logic_gate=document.getElementById('box-logic-gate');
 var content_tools=document.getElementById('content-tools');
 var content_table=document.getElementById('content-table');
@@ -77,7 +76,15 @@ function loadScenary(){
 		scenery.addNode(node_new);
 	});
 	scenery_file.connections.forEach((connection)=>{
-		
+		scenery.selection.x=connection.node1.x;
+		scenery.selection.y=connection.node1.y;
+		scenery.getSelection();
+		let node1=scenery.selection.node;
+		scenery.selection.x=connection.node2.x;
+		scenery.selection.y=connection.node2.y;
+		scenery.getSelection();
+		let node2=scenery.selection.node;
+		scenery.addConnect(node1,node2);
 	});
 	scenery.render();
 	this.scenery=scenery;

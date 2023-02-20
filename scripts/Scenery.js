@@ -21,37 +21,10 @@ class Scenery{
 			tool:null
 		};
 		this.canvas.addEventListener('mousedown',(event)=>{
-			this.selection.x=event.clientX-this.canvas.offsetLeft;
-			this.selection.y=event.clientY-this.canvas.offsetTop;
+			this.getCoords(event);
 			this.pressing=true;
 			// Buscar selección de alguno objeto
-			try{
-				this.nodes.forEach((node)=>{
-					if(this.selection.x>=node.x && this.selection.x<=(node.x+node.width) && this.selection.y>=node.y && this.selection.y<=(node.y+node.height)){
-						throw node;
-					}
-				});
-				this.selection.node=null;
-			}catch(node){
-				if(this.selection.node!=null){
-					switch(this.selection.tool){
-						case Scenery.tools.connect: this.addConnect(node,this.selection.node); return;
-					}
-				}
-				if(!this.pressing_key && this.selection.tool!=Scenery.tools.connect && this.selection.tool!=Scenery.tools.move){
-					this.selection.tool=node.isBtn()?Scenery.tools.btn:Scenery.tools.move;
-				}
-				switch(this.selection.tool){
-					case Scenery.tools.btn:
-						if(node.isBtn()){
-							node.changeStatus();
-							node.getOutput().logic();
-							this.render(true);
-						}
-						break;
-				}
-				this.selection.node=node;
-			}
+			this.getSelection();
 		});
 		this.canvas.addEventListener('mouseup',()=>{
 			this.pressing=false;
@@ -61,17 +34,16 @@ class Scenery{
 			if((!this.pressing && !this.pressing_key && this.selection.tool!=Scenery.tools.connect) || this.selection.node==null){
 				return;
 			}
+			this.getCoords(event);
 			let node=this.selection.node;
-			let x=(event.clientX-this.canvas.offsetLeft);
-			let y=(event.clientY-this.canvas.offsetTop);
 			switch(this.selection.tool){
 				case Scenery.tools.move:
-					node.x=x;
-					node.y=y;
+					node.x=this.selection.x-(node.width/2);
+					node.y=this.selection.y-(node.height/2);
 					this.render();
 					break;
 				case Scenery.tools.connect:
-					this.renderLine(node.x+node.width/2,node.y+node.height/2,x,y);
+					this.renderLine(node.x+node.width/2,node.y+node.height/2,this.selection.x,this.selection.y);
 					break;
 				default: break;
 			}
@@ -95,6 +67,42 @@ class Scenery{
 				case 'Control': this.changeTool(Scenery.tools.btn); break;
 			}
 		});
+	}
+
+	getSelection(){
+		try{
+			this.nodes.forEach((node)=>{
+				if(this.selection.x>=node.x && this.selection.x<=(node.x+node.width) && this.selection.y>=node.y && this.selection.y<=(node.y+node.height)){
+					throw node;
+				}
+			});
+			this.selection.node=null;
+		}catch(node){
+			if(this.selection.node!=null){
+				switch(this.selection.tool){
+					case Scenery.tools.connect: this.addConnect(node,this.selection.node); return;
+				}
+			}
+			if(!this.pressing_key && this.selection.tool!=Scenery.tools.connect && this.selection.tool!=Scenery.tools.move){
+				this.selection.tool=node.isBtn()?Scenery.tools.btn:Scenery.tools.move;
+			}
+			switch(this.selection.tool){
+				case Scenery.tools.btn:
+					if(node.isBtn()){
+						node.changeStatus();
+						node.getOutput().logic();
+						this.render(true);
+					}
+					break;
+			}
+			this.selection.node=node;
+		}
+	}
+
+	getCoords(event){
+		let client_canvas=this.canvas.getBoundingClientRect();
+		this.selection.x=event.clientX-client_canvas.left;
+		this.selection.y=event.clientY-client_canvas.top;
 	}
 
 	changeTool(tool){
@@ -124,7 +132,12 @@ class Scenery{
 			node.logic();
 			return node_delete.id!=node.id;
 		});
+		let count=0;
 		this.nodes_btn=this.nodes_btn.filter((node)=>{
+			if(node_delete.id!=node.id){
+				node.value=String.fromCodePoint(65+count);
+				count++;
+			}
 			return node_delete.id!=node.id;
 		});
 		this.selection.node=null;
@@ -132,13 +145,13 @@ class Scenery{
 	}
 
 	addConnect(node1,node2){
-		if(node1.id==node2.id){
+		if(node1==null || node2==null || node1.id==node2.id){
 			return;
 		}
-		// let connection=new Connection();
-		// connection.node1=node1;
-		// connection.node2=node2;
-		// this.connections.push(connection);
+		let connection=new Connection();
+		connection.node1=node1;
+		connection.node2=node2;
+		this.connections.push(connection);
 		node1.addInput(node2);
 		node2.addOutput(node1);
 		this.selection.node=null;
@@ -169,8 +182,8 @@ class Scenery{
 					this.ctx.drawImage(node.img,node.x,node.y,node.width,node.height);
 				}
 				if(node.isBtn()){
-					let x=node.x-5;
-					let y=node.y+10;
+					let x=node.x-15;
+					let y=node.y+(node.height/2);
 					this.ctx.font="20px Courier New";
 					this.ctx.fillStyle="black";
 					this.ctx.fillText(node.value,x,y);

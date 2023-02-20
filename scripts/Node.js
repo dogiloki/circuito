@@ -47,8 +47,8 @@ class Node{
 		this.x=0;
 		this.y=0;
 		// Tamaño en graficos
-		this.width=50;
-		this.height=50;
+		this.width=40;
+		this.height=40;
 		this.icon=null;
 		this.logic();
 	}
