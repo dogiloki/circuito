@@ -47,8 +47,8 @@ class Node{
 		this.x=0;
 		this.y=0;
 		// Tamaño en graficos
-		this.width=40;
-		this.height=40;
+		this.width=30;
+		this.height=30;
 		this.icon=null;
 		this.logic();
 	}
@@ -91,57 +91,84 @@ class Node{
 			return this.status;
 		}
 		let status=this.status;
+		let value="";
 		let count=0;
 		switch(this.logic_gate){
 			case Node.logic_gate.and:
 				count=0;
+				value+="(";
 				this.inputs.forEach((node)=>{
 					if(node.logic()){
 						count++;
 					}
+					value+=node.value;
 				});
+				value+=")";
 				status=(count==this.inputs.length && count>1);
 				break;
 			case Node.logic_gate.nand:
 				count=0;
+				value+="[<div class='negative'>!(";
 				this.inputs.forEach((node)=>{
 					if(node.logic()){
 						count++;
 					}
+					value+=node.value;
 				});
+				value+=")</div>]";
 				status=count==0?true:count!=this.inputs.length;
 				break;
 			case Node.logic_gate.or:
 				count=0;
+				value+="(";
 				this.inputs.forEach((node)=>{
 					if(node.logic()){
 						count++;
 					}
+					value+=node.value+"+";
 				});
+				value=value.substring(0,value.length-1);
+				value+=")";
 				status=count>=1;
 				break;
 			case Node.logic_gate.nor:
 				count=0;
+				value+="[<div class='negative'>!(";
 				this.inputs.forEach((node)=>{
 					if(node.logic()){
 						count++;
 					}
+					value+=node.value+"+";
 				});
+				value=value.substring(0,value.length-1);
+				value+=")</div>]";
 				status=!(count>=1);
 				break;
 			case Node.logic_gate.exor:
 				count=0;
-				this.inputs.forEach((node)=>{
+				value+="(";
+				this.inputs.forEach((node,index)=>{
 					if(node.logic()){
 						count++;
 					}
+					value+=(index==0?"":"<div class='negative'>!")+node.value;
+					value+=(index==0?"":"</div>");
 				});
+				value+="+";
+				this.inputs.forEach((node,index)=>{
+					value+=(index==0?"<div class='negative'>!":"")+node.value;
+					value+=(index==0?"</div>":"");
+				});
+				value+=")";
 				status=(count<=1 && count!=0);
 				break;
 			case Node.logic_gate.inverter:
+				value+="[<div class='negative'>!(";
 				this.inputs.forEach((node)=>{
 					status=node.logic();
+					value+=node.value;
 				});
+				value+=")</div>]";
 				status=this.inputs<=0?true:status?false:true;
 				break;
 			case Node.logic_gate.led:
@@ -149,10 +176,12 @@ class Node{
 					if(node.logic()){
 						count++;
 					}
+					value+=node.value;
 				});
 				status=count>=1;
 			default: break;
 		}
+		this.value=value;
 		this.changeStatus(status);
 		return status;
 	}

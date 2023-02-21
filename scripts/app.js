@@ -4,7 +4,16 @@ var box_logic_gate=document.getElementById('box-logic-gate');
 var content_tools=document.getElementById('content-tools');
 var content_table=document.getElementById('content-table');
 var btn_table=document.getElementById('btn-table');
-var scenery=new Scenery(document.getElementById('canvas'));
+var btn_save=document.getElementById('btn-save');
+var btn_download=document.getElementById('btn-download');
+var btn_delete=document.getElementById('btn-delete');
+var btn_file=document.getElementById('btn-file');
+//var btn_add_pag=document.getElementById('btn-add-pag');
+var content_pages=document.getElementById('content-pages');
+var content_info=document.getElementById('content-info');
+var pages=[];
+var canvas=document.getElementById('canvas');
+var scenery=new Scenery(canvas);
 var table;
 var pressing=false;
 
@@ -25,6 +34,49 @@ document.addEventListener('DOMContentLoaded',()=>{
 		content_tools.appendChild(btn);
 	});
 	this.loadScenary();
+	this.pages.push(this.scenery);
+	//this.loadPages();
+});
+
+canvas.addEventListener('click',()=>{
+	this.loadInfo();
+})
+
+/*btn_add_pag.addEventListener('click',()=>{
+	let scenery=new Scenery(canvas);
+	this.scenery=scenery;
+	this.pages.push(scenery);
+	//this.loadPages();
+});*/
+
+btn_save.addEventListener('click',()=>{
+	this.saveScenary();
+});
+
+btn_download.addEventListener('click',()=>{
+	this.scenery.nodes.forEach((node)=>{
+		node.inputs=[];
+		node.outputs=[];
+	});
+	let link=document.createElement('a');
+	link.setAttribute("href","data:text/plain;charset=utf-8,"+encodeURIComponent(JSON.stringify(this.scenery)));
+	link.setAttribute("download","Circuito.txt");
+	document.body.appendChild(link);
+	link.click();
+	location.reload();
+});
+
+btn_delete.addEventListener('click',()=>{
+	File.delete();
+	location.reload();
+});
+
+btn_file.addEventListener('change',(evt)=>{
+	const reader=new FileReader();
+	reader.addEventListener("load",(evt2)=>{
+		this.loadScenary(JSON.parse(evt2.target.result));
+	});
+	reader.readAsText(evt.target.files[0]);
 });
 
 btn_add_btn.addEventListener('click',()=>{
@@ -64,8 +116,42 @@ content_table.addEventListener('mousemove',(event)=>{
 	//content_table.style.top=(event.clientY-10)+"px";
 });
 
-function loadScenary(){
-	let scenery_file=File.get();
+function loadPages(){
+	this.content_pages.innerHTML="";
+	this.pages.forEach((scenery,index)=>{
+		let btn=document.createElement('button');
+		btn.innerHTML="Circuito "+(index+1);
+		btn.addEventListener('click',()=>{
+			//this.saveScenary(scenery);
+			this.scenery=scenery;
+			this.scenery.render();
+		});
+		this.content_pages.appendChild(btn);
+	});
+}
+
+function loadInfo(){
+	let node=this.scenery.selection.node;
+	if(node===null){
+		return;
+	}
+	let info="";
+	info+="<b>Tipo:</b> "+node.logic_gate;
+	info+="<br><b>Valor:</b> "+node.value;
+	info+="<br><br><b>Valor:</b> "+node.value.replaceAll("!","");
+	this.content_info.innerHTML=info;
+}
+
+function loadScenary(scenery_json=null){
+	let scenery_file;
+	if(scenery_json==null){
+		scenery_file=File.get();
+		if(scenery_file==null){
+			return;
+		}
+	}else{
+		scenery_file=scenery_json
+	}
 	if(scenery_file==null){
 		return;
 	}
@@ -105,9 +191,13 @@ function loadScenary(){
 	});
 	scenery.render();
 	this.scenery=scenery;
+	this.scenery.render();
 }
 
-function saveScenary(){
+function saveScenary(scenery=null){
+	if(scenery!=null){
+		this.scenery=scenery;
+	}
 	this.scenery.nodes.forEach((node)=>{
 		node.inputs=[];
 		node.outputs=[];

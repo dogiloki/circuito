@@ -8,8 +8,16 @@
 			padding: 0px;
 			margin: 0px;
 			box-sizing: border-box;
+			font-family: Courier New;
+		}
+		.content-scenary{
+			display: flex;
+		}
+		.content-info{
+			font-size: 18px;
 		}
 		.canvas{
+			border: 1px solid #c2c2c2;
 		}
 		.content-table{
 			position: fixed;
@@ -24,6 +32,10 @@
 		.table{
 			margin-top: 20px;
 		}
+		.negative{
+			display: inline-flex;
+			box-shadow: 0px -1px #000000;
+		}
 	</style>
 </head>
 <body>
@@ -35,9 +47,19 @@
 	<button id="btn-add-logic-gate">Agregar</button>
 	<div class="content-tools" id="content-tools"></div>
 	<button class="btn-table" id="btn-table">Generar tabla</button>
+	<button class="btn-save" id="btn-save">Guardar</button>
+	<button class="btn-download" id="btn-download">Descarga</button>
+	<input type="file" id="btn-file">
+	<button class="btn-delete" id="btn-delete">Limpiar</button>
+	<!--<button class="btn-add-pag" id="btn-add-pag">Nuevo circuito</button>-->
 </header>
 
-<canvas class="canvas" id="canvas" width="700px" height="700px"></canvas>
+<div class="content-pages" id="content-pages"></div>
+
+<div class="content-scenary" id="content-scenary">
+	<canvas class="canvas" id="canvas" width="700px" height="700px"></canvas>
+	<div class="content-info" id="content-info"></div>
+</div>
 
 <div class="content-table" id="content-table">
 	<table class="table" id="table" border="1"></table>
