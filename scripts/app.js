@@ -133,6 +133,7 @@ function loadPages(){
 function loadInfo(){
 	let node=this.scenery.selection.node;
 	if(node===null){
+		this.content_info.innerHTML="";
 		return;
 	}
 	let info="";
