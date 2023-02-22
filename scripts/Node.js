@@ -51,11 +51,13 @@ class Node{
 		this.height=30;
 		this.icon=null;
 		this.logic();
+		this.changeStatus(this.status);
 	}
 
 	setLogicGate(logic_gate){
 		this.logic_gate=logic_gate;
 		this.logic();
+		this.changeStatus(this.status);
 	}
 
 	isBtn(){
@@ -101,8 +103,9 @@ class Node{
 					if(node.logic()){
 						count++;
 					}
-					value+=node.value;
+					value+=node.value+"*";
 				});
+				value=value.substring(0,value.length-1);
 				value+=")";
 				status=(count==this.inputs.length && count>1);
 				break;
@@ -113,8 +116,9 @@ class Node{
 					if(node.logic()){
 						count++;
 					}
-					value+=node.value;
+					value+=node.value+"*";
 				});
+				value=value.substring(0,value.length-1);
 				value+=")</div>]";
 				status=count==0?true:count!=this.inputs.length;
 				break;
@@ -153,12 +157,16 @@ class Node{
 					}
 					value+=(index==0?"":"<div class='negative'>!")+node.value;
 					value+=(index==0?"":"</div>");
+					value+="*";
 				});
+				value=value.substring(0,value.length-1);
 				value+="+";
 				this.inputs.forEach((node,index)=>{
 					value+=(index==0?"<div class='negative'>!":"")+node.value;
 					value+=(index==0?"</div>":"");
+					value+="*";
 				});
+				value=value.substring(0,value.length-1);
 				value+=")";
 				status=(count<=1 && count!=0);
 				break;

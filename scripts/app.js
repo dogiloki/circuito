@@ -65,7 +65,7 @@ btn_download.addEventListener('click',()=>{
 	link.setAttribute("download","Circuito.txt");
 	document.body.appendChild(link);
 	link.click();
-	location.reload();
+	this.loadScenary();
 });
 
 btn_delete.addEventListener('click',()=>{
