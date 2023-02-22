@@ -3,7 +3,8 @@ class Scenery{
 	static tools={
 		connect:'Conectar',
 		btn:'Modo boton',
-		move:'Modo mover'
+		move:'Modo mover',
+		selecction:'Modo selección'
 	};
 
 	constructor(canvas){
@@ -12,26 +13,27 @@ class Scenery{
 		this.nodes=[];
 		this.nodes_btn=[];
 		this.connections=[];
-		this.pressing=false;
 		this.pressing_key=false;
 		this.selection={
 			x:0,
 			y:0,
 			node:null,
+			nodes:[],
 			tool:null
 		};
 		this.canvas.addEventListener('mousedown',(event)=>{
 			this.getCoords(event);
-			this.pressing=true;
 			// Buscar selección de alguno objeto
 			this.getSelection();
 		});
 		this.canvas.addEventListener('mouseup',()=>{
-			this.pressing=false;
+			if(this.selection.tool==Scenery.tools.move){
+				this.selection.tool=null;
+			}
 			this.render();
 		});
 		this.canvas.addEventListener('mousemove',(event)=>{
-			if((!this.pressing && !this.pressing_key && this.selection.tool!=Scenery.tools.connect) || this.selection.node==null){
+			if(this.selection.node==null){
 				return;
 			}
 			this.getCoords(event);
@@ -60,12 +62,11 @@ class Scenery{
 			}
 		});
 		document.addEventListener('keyup',(event)=>{
-			this.pressing_key=false;
 			switch(event.key){
 				case 'Delete': this.deleteNode(this.selection.node); break;
-				case 'Shift': this.changeTool(Scenery.tools.btn); break;
-				case 'Control': this.changeTool(Scenery.tools.btn); break;
 			}
+			this.changeTool(null);
+			this.pressing_key=false;
 		});
 	}
 
@@ -83,7 +84,7 @@ class Scenery{
 					case Scenery.tools.connect: this.addConnect(node,this.selection.node); return;
 				}
 			}
-			if(!this.pressing_key && this.selection.tool!=Scenery.tools.connect && this.selection.tool!=Scenery.tools.move){
+			if(!this.pressing_key){
 				this.selection.tool=node.isBtn()?Scenery.tools.btn:Scenery.tools.move;
 			}
 			switch(this.selection.tool){

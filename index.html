@@ -20,11 +20,9 @@
 			border: 1px solid #c2c2c2;
 		}
 		.content-table{
-			position: fixed;
-			right: 20px;
-			top: 20px;
+			display: block;
 			border: 2px solid #c2c2c2;
-			height: 50vh;
+			height: 90vh;
 			background: #f5f5f5;
 			overflow-x: hidden;
 			overflow-y: scroll;
@@ -58,12 +56,11 @@
 <div class="content-pages" id="content-pages"></div>
 
 <div class="content-scenary" id="content-scenary">
-	<canvas class="canvas" id="canvas" width="700px" height="700px"></canvas>
-	<div class="content-info" id="content-info"></div>
-</div>
-
-<div class="content-table" id="content-table">
-	<table class="table" id="table" border="1"></table>
+	<canvas class="canvas" id="canvas"></canvas>
+	<div class="content-table" id="content-table">
+		<div class="content-info" id="content-info"></div>
+		<table class="table" id="table" border="1"></table>
+	</div>
 </div>
 
 </body>

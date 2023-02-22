@@ -18,6 +18,8 @@ var table;
 var pressing=false;
 
 document.addEventListener('DOMContentLoaded',()=>{
+	this.canvas.setAttribute('width',document.body.offsetHeight+"px");
+	this.canvas.setAttribute('height',document.body.offsetHeight+"px");
 	Object.keys(Node.logic_gate).forEach((key)=>{
 		let option=document.createElement('option');
 		option.innerHTML=Node.logic_gate[key];
