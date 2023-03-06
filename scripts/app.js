@@ -213,11 +213,15 @@ function generateTable(table){
 	this.table=new Table(this.scenery.nodes_btn,this.scenery.selection.node);
 	this.table.generateTable();
 	document.getElementById('table').innerHTML="";
-	for(let a=-1; a<this.table.values.length; a++){
+	for(let a=-1; a<this.table.values.length-1; a++){
 		let tr=document.createElement('tr');
-		for(let b=0; b<this.table.bits.length; b++){
+		for(let b=-1; b<this.table.bits.length; b++){
 			let td=document.createElement('td');
-			td.textContent=a==-1?this.table.letters[b]:this.table.values[a][b];
+			if(b==-1){
+				td.textContent=a==-1?'No.':a;
+			}else{
+				td.textContent=a==-1?this.table.letters[b]:this.table.values[a][b];
+			}
 			tr.appendChild(td);
 		}
 		let td=document.createElement('td');
