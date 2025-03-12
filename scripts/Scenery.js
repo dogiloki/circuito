@@ -91,7 +91,9 @@ class Scenery{
 				case Scenery.tools.btn:
 					if(node.isBtn()){
 						node.changeStatus();
-						node.getOutput().logic();
+						node.outputs.forEach((node_output)=>{
+							node_output.logic();
+						});
 						this.render(true);
 					}
 					break;
