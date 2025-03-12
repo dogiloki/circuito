@@ -189,9 +189,6 @@ class Node{
 				status=count>=1;
 			default: break;
 		}
-		this.outputs.forEach((node)=>{
-			node.logic();
-		});
 		this.value=value;
 		this.changeStatus(status);
 		return status;
